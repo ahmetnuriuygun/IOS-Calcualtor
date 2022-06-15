@@ -34,13 +34,45 @@ operationButtons.forEach((op)=>{
         AltYazilacakSayiJS = [];
         islem = op.textContent
         UstEkran.textContent = UstYazilacakSayiJS.join("") + islem;
+        AltEkran.textContent = AltYazilacakSayiJS
     }
 })
 equal.onclick=()=>{
     switch(islem){
+
         case "+" : 
-        sonuc = Number(UstYazilacakSayiJS.join(""))+ Number(AltYazilacakSayiJS.join(""));
+        sonuc = Number(UstYazilacakSayiJS.join("")) + Number(AltYazilacakSayiJS.join(""));
         AltEkran.textContent = sonuc
+        UstYazilacakSayiJS = sonuc
+        UstEkran.textContent = ""
+        console.log(sonuc)
+
+        case "-" : 
+        sonuc = Number(UstYazilacakSayiJS.join("")) - Number(AltYazilacakSayiJS.join(""));
+        AltEkran.textContent = sonuc
+        UstYazilacakSayiJS = sonuc
+        UstEkran.textContent = ""
+        console.log(sonuc)
+
+        case "x" : 
+        sonuc = Number(UstYazilacakSayiJS.join("")) * Number(AltYazilacakSayiJS.join(""));
+        AltEkran.textContent = sonuc;
+        UstYazilacakSayiJS = sonuc;
+        UstEkran.textContent = "";
+        console.log(sonuc);
+
+        case "÷" : 
+        sonuc = Number(UstYazilacakSayiJS.join("")) / Number(AltYazilacakSayiJS.join(""));
+        AltEkran.textContent = sonuc
+        UstYazilacakSayiJS = sonuc
+        UstEkran.textContent = ""
+        console.log(sonuc)
+
+        case "%" : 
+        sonuc = Number(UstYazilacakSayiJS.join("")) % Number(AltYazilacakSayiJS.join(""));
+        AltEkran.textContent = sonuc
+        UstYazilacakSayiJS = sonuc
+        UstEkran.textContent = ""
         console.log(sonuc)
         
     }
