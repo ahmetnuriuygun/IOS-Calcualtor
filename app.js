@@ -1,178 +1,152 @@
+//* ======================================================
+//*                     IOS CALCULATOR
+//* ======================================================
 
-const numberButtons = document.querySelectorAll(".num")
-//* I assign to number button to the variables
+const numberButtons=  document.querySelectorAll(".num")
+const operationButtons=  document.querySelectorAll(".operator")
+const equalButtons=  document.querySelector(".equal")
+const acButtons=  document.querySelector(".ac")
+const pmButtons=  document.querySelector(".pm")
+const percentButtons=  document.querySelector(".percent")
+const üstEkran = document.querySelector(".previous-display");
+const altEkran = document.querySelector(".current-display");
 
 
-const operationButtons = document.querySelectorAll(".operator")
-//* I assign to operation button to the variables
+//?operator değişkenleri
 
+let üstEkranYazi="";
+let altEkranYazi="";
+let işlem="";
 
-const equal = document.querySelector(".equal")
-//* I assign to equal button to display the result
-
-
-const UstEkran = document.querySelector(".previous-display")
-const AltEkran = document.querySelector(".current-display")
-
-//* I assign to display classes to the variables
-
-let AltYazilacakSayiJS = []
-let UstYazilacakSayiJS = []
-let islem = ""
-let sonuc ;
+//?eşittir yada percent e basıldıktan sonra yeni işleme yeni sayılar girmek için, tıklandı tıklanmadı boolean değişkeni hazırladık, eşittir (ve de percent) butonunda bu true yani tıklandı olacak
+let esittirVeyaPercentPressed=false;
 
 numberButtons.forEach((number)=>{
-    number.onclick=()=>{
-        AltYazilacakSayiJS.push(number.textContent)
-        AltEkran.textContent = AltYazilacakSayiJS.join("");
-        console.log(AltYazilacakSayiJS);
-    }
+number.onclick=()=>{
+ekranaHazirlik(number.textContent)
+updateEkran();
+}
 })
+const ekranaHazirlik=(num)=>{
+
+//?kullanıcı 0 girerse, sonrasında 0 ve . dışında bir sayı girerse, ekranda girilen yeni sayı gözüksün
+
+if(altEkranYazi=="0" && num !=="0" && num !==".")
+{
+ altEkranYazi=num
+ return;
+}
+//?kullanıcı herhangi bir yerde . girmişken, tekrar nokta girmeye kalkarsa giremesin
+if (num === "." && altEkranYazi.includes(".")) return;
+
+//?kullanıcı 10 haneden sonra girmesin
+if(altEkranYazi.length>9)
+return;
+
+//?kullanıcı ilk başta 0 girer ardından tekrar 0 girerse, girilmesin, tek 0 döndürsün
+if(altEkranYazi==="0" && num ==="0")
+return;
+
+//?eşittir yada percent a basıldıktan sonra girilen number tek başına ekranda görünsün,çünkü yeni işlem başlıyor
+if (esittirVeyaPercentPressed) {
+ esittirVeyaPercentPressed=false
+  altEkranYazi = num;
+  return
+}
+//?bütün şartları başarı ile geçtiyse basılan numaraları arka arkaya ekle
+altEkranYazi+=num
+}
+
+//?BURADA YAPILANLARI EKRANA BASTIRMA
+const updateEkran=()=>{
+
+ if(altEkranYazi.toString().length>9)
+
+ {altEkranYazi= altEkranYazi.toString().slice(0,9)}
+
+
+
+altEkran.textContent=altEkranYazi;
+
+//?işlem girilince 
+if(işlem!=null){
+üstEkran.textContent= `${üstEkranYazi}  ${işlem}`
+}
+else{
+ üstEkran.textContent="";
+}
+}
+
+//?herhangi bir işleme tıklandığında
 operationButtons.forEach((op)=>{
-    op.onclick=()=>{
-        UstYazilacakSayiJS = AltYazilacakSayiJS ;
-        AltYazilacakSayiJS = [];
-        islem = op.textContent
-        UstEkran.textContent = UstYazilacakSayiJS.join("") + islem;
-        AltEkran.textContent = AltYazilacakSayiJS
-    }
+op.onclick=()=>{
+
+  if(altEkranYazi==="") return
+  //?eşittire basılmadan arka arkaya işleme basılırsa (alt ve üst ekran doluyken işleme basılmaya devam edilirse)
+  if (altEkranYazi && üstEkranYazi) hesapla();
+
+  işlem = op.textContent;
+  üstEkranYazi = altEkranYazi;
+  altEkranYazi = "";
+
+  updateEkran();
+}
+
 })
-equal.onclick=()=>{
-    switch(islem){
 
-        case "+" : 
-        sonuc = Number(UstYazilacakSayiJS.join("")) + Number(AltYazilacakSayiJS.join(""));
-        AltEkran.textContent = sonuc
-        UstYazilacakSayiJS = sonuc
-        UstEkran.textContent = ""
-        console.log(sonuc)
+//?eşittir butonuna tıklandığında
+equalButtons.onclick = () => {
+  hesapla();
+  updateEkran();
+  esittirVeyaPercentPressed=true;
+};
 
-        case "-" : 
-        sonuc = Number(UstYazilacakSayiJS.join("")) - Number(AltYazilacakSayiJS.join(""));
-        AltEkran.textContent = sonuc
-        UstYazilacakSayiJS = sonuc
-        UstEkran.textContent = ""
-        console.log(sonuc)
+const hesapla=()=>{
+let sonuc;
+switch (işlem) {
+  case "+":
+    sonuc = +üstEkranYazi + Number(altEkranYazi);
+    break;
+  case "-":
+    sonuc = üstEkranYazi - altEkranYazi;
+    break;
+  case "x":
+    sonuc = üstEkranYazi * altEkranYazi;
+    break;
+  case "÷":
+    sonuc = üstEkranYazi / altEkranYazi;
+    break;
+  default:
+    return;
+}
+altEkranYazi=sonuc;
 
-        case "x" : 
-        sonuc = Number(UstYazilacakSayiJS.join("")) * Number(AltYazilacakSayiJS.join(""));
-        AltEkran.textContent = sonuc;
-        UstYazilacakSayiJS = sonuc;
-        UstEkran.textContent = "";
-        console.log(sonuc);
+üstEkranYazi="";
+işlem="";
 
-        case "÷" : 
-        sonuc = Number(UstYazilacakSayiJS.join("")) / Number(AltYazilacakSayiJS.join(""));
-        AltEkran.textContent = sonuc
-        UstYazilacakSayiJS = sonuc
-        UstEkran.textContent = ""
-        console.log(sonuc)
+}
+//?AC butonuna basıldığında
+acButtons.addEventListener("click",()=>{
 
-        case "%" : 
-        sonuc = Number(UstYazilacakSayiJS.join("")) % Number(AltYazilacakSayiJS.join(""));
-        AltEkran.textContent = sonuc
-        UstYazilacakSayiJS = sonuc
-        UstEkran.textContent = ""
-        console.log(sonuc)
-        
-    }
+işlem="";
+altEkranYazi="";
+üstEkranYazi="";
+updateEkran()
+
+})
+
+
+pmButtons.onclick=()=>{
+if(!altEkranYazi) return
+
+  altEkranYazi= altEkranYazi*-1
+  updateEkran()
 }
 
-const pm = document.querySelector(".pm")
+percentButtons.onclick=()=>{
+if (!altEkranYazi) return;
+altEkranYazi= altEkranYazi/100;
+updateEkran()
+esittirVeyaPercentPressed=true
 
-
-pm.onclick=()=>{
-    let yeniSayi = Number(AltYazilacakSayiJS.join("")); 
-    yeniSayi = -1 * yeniSayi;
-    AltYazilacakSayiJS = []
-    AltYazilacakSayiJS.push(yeniSayi)
-    console.log(AltYazilacakSayiJS)
-    AltEkran.textContent = AltYazilacakSayiJS
 }
-
-sifirlama = document.querySelector(".ac")
-sifirlama.onclick=()=>{
-    UstYazilacakSayiJS = []
-    AltYazilacakSayiJS = []
-    UstEkran.textContent = UstYazilacakSayiJS 
-    AltEkran.textContent = AltYazilacakSayiJS 
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// numberButtons.forEach((number)=>{
-//     number.addEventListener("click",e=>{
-//     AltYazilacakSayiJS += number.textContent 
-//     current.textContent = AltYazilacakSayiJS;
-    
-// operationButtons.forEach((op)=> {
-// op.addEventListener("click",e=>{
-//     islem = op.textContent;
-//     UstYazilacakSayiJS = AltYazilacakSayiJS;
-//     AltYazilacakSayiJS = ""
-//         previous.innerHTML = UstYazilacakSayiJS + islem
-    // });
-    // });
-    
-
-
-// if(islem != null){
-//     previous.textContent = `${UstYazilacakSayiJS} ${islem}`;
-// }if(islem == "+"){
-//     sonuc = UstYazilacakSayiJS + AltYazilacakSayiJS
-//     current.textContent = sonuc
-// }else if(islem == "-"){
-//     sonuc = UstYazilacakSayiJS - AltYazilacakSayiJS
-//     current.textContent = sonuc
-// }else if(islem == "x"){
-//     sonuc = UstYazilacakSayiJS * AltYazilacakSayiJS
-//     current.textContent = sonuc
-// }else if(islem == "÷"){
-//     sonuc = UstYazilacakSayiJS / AltYazilacakSayiJS
-//     current.textContent = sonuc
-// }else if(islem == "%"){
-//     sonuc = UstYazilacakSayiJS % AltYazilacakSayiJS
-//     current.textContent = sonuc
-// } 
-
-
-
-
-
-
-
-// });
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
